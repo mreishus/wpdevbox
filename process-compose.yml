@@ -1,0 +1,5 @@
+processes:
+  php-error:
+    command: "tail -f $DEVBOX_PROJECT_ROOT/.devbox/virtenv/php/php_errors.log"
+    availability:
+      restart: "always"
