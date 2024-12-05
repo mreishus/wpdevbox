@@ -1,0 +1,46 @@
+# The nginx.conf in this folder is automatically generated from nginx.template
+# To modify your NGINX config, edit the nginx.template file
+
+events {}
+http {
+    # Add MIME type support
+    include mime.types;
+    default_type application/octet-stream;
+
+    server {
+         listen       $NGINX_WEB_PORT;
+         listen       [::]:$NGINX_WEB_PORT;
+         server_name  $NGINX_WEB_SERVER_NAME;
+         root         $NGINX_WEB_ROOT;
+         error_log error.log error;
+         access_log access.log;
+         client_body_temp_path temp/client_body;
+         proxy_temp_path temp/proxy;
+         fastcgi_temp_path temp/fastcgi;
+         uwsgi_temp_path temp/uwsgi;
+         scgi_temp_path temp/scgi;
+         
+         # Add index.php as first priority
+         index index.php index.html;
+         
+         server_tokens off;
+
+         # Add WordPress-specific rules
+         location / {
+             try_files $uri $uri/ /index.php?$args;
+         }
+
+         location ~ \.php$ {
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass 127.0.0.1:${PHPFPM_PORT};
+            fastcgi_index index.php;
+            include fastcgi.conf;
+         }
+
+         # Add explicit types for common WordPress files
+         location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+             expires max;
+             log_not_found off;
+         }
+    }
+}

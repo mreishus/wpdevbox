@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WordPress Dev Environment</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }
+        pre { background: #f4f4f4; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        code { background: #f4f4f4; padding: 2px 5px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>WordPress Dev Environment</h1>
+    <p>Environment is ready for WordPress installation. After downloading WordPress, configure your <code>wp-config.php</code> with:</p>
+    <pre>
+define( 'DB_NAME', 'wordpress' );
+define( 'DB_USER', 'wpuser' );
+define( 'DB_PASSWORD', 'wppass' );
+define( 'DB_HOST', 'localhost:' . getenv('MYSQL_UNIX_PORT') );
+    </pre>
+    <p>Then download WordPress:</p>
+    <pre>
+curl -O https://wordpress.org/latest.tar.gz
+tar xzf latest.tar.gz
+mv wordpress/* .
+rmdir wordpress
+rm latest.tar.gz</pre>
+</body>
+</html>

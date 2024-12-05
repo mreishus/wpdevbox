@@ -1,0 +1,69 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.6/.schema/devbox.schema.json",
+  "packages": [
+    "mariadb@latest",
+    "nginx@latest",
+    "php@latest"
+  ],
+  "shell": {
+    "init_hook": [
+      "if [ ! -f .devbox/.setup_complete ]; then",
+      "  echo '🚀 Welcome to WordPress DevBox!'",
+      "  echo '❗ Environment needs initialization. Please run:'",
+      "  echo '   devbox run setup:all'",
+      "else",
+      "  echo '✅ WordPress DevBox ready - use devbox services up to start'",
+      "fi"
+    ],
+    "scripts": {
+      "setup:db": [
+        "echo '📦 Setting up MariaDB...'",
+        "devbox services start mariadb",
+        "sleep 3",
+        "mysql -u root < devbox.d/mariadb/setup_db.sql",
+        "echo '✅ WordPress database and user created'",
+        "devbox services stop mariadb || true"
+      ],
+      "setup:web": [
+        "echo '📦 Setting up WordPress...'",
+        "cd devbox.d/web",
+        "mkdir -p .cache",
+        "if [ ! -f .cache/latest.tar.gz ]; then",
+        "  echo '⬇️ Downloading WordPress...'",
+        "  curl -o .cache/latest.tar.gz https://wordpress.org/latest.tar.gz",
+        "fi",
+        "if [ ! -f wp-config.php ]; then",
+        "  echo '📝 Installing WordPress files...'",
+        "tar xzf .cache/latest.tar.gz",
+        "  mv wordpress/* .",
+        "  rmdir wordpress",
+        "  cp ../wordpress/wp-config.php .",
+        "  echo '✅ WordPress installed and configured'",
+        "else",
+        "  echo '✨ WordPress already installed'",
+        "fi"
+      ],
+      "setup:all": [
+        "echo '🚀 Starting full WordPress setup...'",
+        "devbox run setup:db",
+        "devbox run setup:web",
+        "touch .devbox/.setup_complete",
+        "echo '✅ Setup complete! Run devbox services up to start'",
+        "devbox services up"
+      ],
+      "setup:reset": [
+        "echo '🗑️ Resetting WordPress environment...'",
+        "devbox services stop all 2>/dev/null || true",
+        "rm -f .devbox/.setup_complete",
+        "echo '📁 Cleaning web directory...'",
+        "rm -rf devbox.d/web/*",
+        "echo '📁 Cleaning database...'",
+        "devbox services start mariadb || true",
+        "sleep 3",
+        "mysql -u root < devbox.d/mariadb/reset_db.sql",
+        "devbox services stop mariadb || true",
+        "echo '♻️ Environment reset complete. Run setup:all to reinstall'"
+      ]
+    }
+  }
+}
