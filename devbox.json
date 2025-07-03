@@ -3,7 +3,8 @@
   "packages": [
     "mariadb@latest",
     "nginx@latest",
-    "php@latest"
+    "php@latest",
+    "wp-cli@latest"
   ],
   "shell": {
     "init_hook": [
